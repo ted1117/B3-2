@@ -17,8 +17,6 @@ def build_prompt(status: str, diff: str, prompt_type: PromptType) -> str:
   - chore: 설정, 의존성 등 기타 변경
 - 예시: feat: AI 프롬프트 생성 기능 추가
 - 제목은 가능하면 50자 이내로 작성하고, 최대 72자를 넘지 마세요.
-- 본문은 필요한 경우에만 작성하세요.
-- 본문을 작성하는 경우 관련 파일/모듈 1~3개 또는 핵심 변경 사항 1~2개를 bullet 형식으로 작성하세요.
 """
 
         case "pr":
