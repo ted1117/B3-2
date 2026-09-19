@@ -1,5 +1,9 @@
 import argparse
 
+from app.ai.client import create_ai_client
+from app.ai.prompts import build_prompt
+from app.git_repository import GitRepository
+
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -13,7 +17,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "--model",
-        default="gpt-5.6-luna",
+        default="gpt-4.1-nano",
     )
 
     parser.add_argument(
@@ -35,4 +39,27 @@ def main() -> None:
     parser = create_parser()
     args = parser.parse_args()
 
-    print(args)
+    repository = GitRepository()
+
+    if not repository.has_changes():
+        print("변경 사항이 없습니다.")
+        return
+
+    status = repository.get_status()
+    diff = repository.get_diff()
+
+    prompt = build_prompt(
+        status=status,
+        diff=diff,
+        prompt_type=args.command,
+    )
+
+    client = create_ai_client(
+        model=args.model,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens,
+    )
+
+    result = client.generate(prompt)
+
+    print(result)
