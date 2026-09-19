@@ -6,7 +6,7 @@ from typing import Self
 @dataclass(frozen=True)
 class AIConfig:
     api_key: str = field(repr=False)
-    model: str = "default-model"
+    model: str = "gpt-4.1-nano"
     temperature: float = 0.3
     max_tokens: int = 500
 
@@ -15,7 +15,7 @@ class AIConfig:
         cls,
         env_name: str,
         *,
-        model: str = "default-model",
+        model: str = "gpt-4.1-nano",
         temperature: float = 0.3,
         max_tokens: int = 500,
     ) -> Self:

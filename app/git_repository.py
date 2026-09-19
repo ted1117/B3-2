@@ -13,6 +13,10 @@ class GitRepository:
         """git diff 반환"""
         return self.repo.git.diff()
 
+    def get_pr_diff(self, base_branch: str = "develop") -> str:
+        """PR용 git diff 반환"""
+        return self.repo.git.diff(f"{base_branch}...HEAD")
+
     def has_changes(self) -> bool:
         """변경사항 존재 여부 반환"""
         return bool(self.get_status().strip())

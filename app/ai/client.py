@@ -81,3 +81,31 @@ class CodysseyAIClient:
         output = response.json()["choices"][0]["message"]["content"]
 
         return output
+
+
+def create_ai_client(
+    model: str,
+    temperature: float,
+    max_tokens: int,
+) -> AIClient:
+    match model:
+        case "gpt-4.1-nano":
+            config = AIConfig.from_env(
+                "OPENAI_API_KEY",
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return OpenAIClient(config)
+
+        case "gpt-5.4-mini":
+            config = AIConfig.from_env(
+                "CODYSSEY_API_KEY",
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return CodysseyAIClient(config)
+
+        case _:
+            raise ValueError(f"지원하지 않는 모델입니다: {model}")
