@@ -5,6 +5,24 @@ from app.ai.prompts import build_prompt
 from app.git_repository import GitRepository
 
 
+def temperature_type(value: str) -> float:
+    temperature = float(value)
+
+    if not 0 <= temperature <= 2:
+        raise argparse.ArgumentTypeError("temperature는 0~2 사이여야 합니다.")
+
+    return temperature
+
+
+def max_tokens_type(value: str) -> int:
+    max_tokens = int(value)
+
+    if not 1 <= max_tokens <= 32_768:
+        raise argparse.ArgumentTypeError("max_tokens는 1~32768 사이여야 합니다.")
+
+    return max_tokens
+
+
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=("Git 변경 사항을 분석하여 " "커밋 메시지와 PR 초안을 생성합니다.")
@@ -28,16 +46,16 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "--temperature",
-        type=float,
+        type=temperature_type,
         default=0.3,
-        help="AI 응답의 temperature 값",
+        help="AI 응답의 temperature 값 (0~2)",
     )
 
     parser.add_argument(
         "--max-tokens",
-        type=int,
+        type=max_tokens_type,
         default=500,
-        help="AI 응답의 최대 토큰 수",
+        help="AI 응답의 최대 토큰 수 (1~32768)",
     )
 
     return parser
@@ -81,6 +99,7 @@ def main() -> None:
         diff=diff,
         prompt_type=args.command,
     )
+
     try:
         client = create_ai_client(
             model=args.model,
@@ -92,6 +111,7 @@ def main() -> None:
         return
 
     print("[INFO] AI API 요청 중...")
+
     result = client.generate(prompt)
 
     match args.command:
