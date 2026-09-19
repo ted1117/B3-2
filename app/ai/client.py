@@ -89,7 +89,7 @@ def create_ai_client(
     max_tokens: int,
 ) -> AIClient:
     match model:
-        case "gpt-5.6-luna":
+        case "gpt-4.1-nano":
             config = AIConfig.from_env(
                 "OPENAI_API_KEY",
                 model=model,
