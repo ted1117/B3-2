@@ -45,9 +45,18 @@ def main() -> None:
             print(f"[INFO] PR 변경 사항 수집 완료: " f"{diff_lines}줄")
 
     if args.safe_mode:
-        status = mask_sensitive_data(status)
-        diff = mask_sensitive_data(diff)
-        print("[INFO] Safe Mode 적용: 민감정보를 마스킹했습니다.")
+        status, status_emails, status_keys = mask_sensitive_data(status)
+        diff, diff_emails, diff_keys = mask_sensitive_data(diff)
+
+        email_count = status_emails + diff_emails
+        api_key_count = status_keys + diff_keys
+
+        print("[INFO] Safe Mode 활성화")
+        print(
+            f"[INFO] 민감정보 마스킹 완료: "
+            f"이메일 {email_count}건, "
+            f"API Key {api_key_count}건"
+        )
 
     prompt = build_prompt(
         status=status,

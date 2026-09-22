@@ -1,21 +1,20 @@
 import re
 
 
-def mask_sensitive_data(text: str) -> str:
-    """민감정보를 마스킹하여 반환합니다."""
+def mask_sensitive_data(text: str) -> tuple[str, int, int]:
+    email_pattern = r"\b[A-Za-z0-9._%+-]+@" r"[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
+    api_key_pattern = r"\bsk-[A-Za-z0-9_-]+\b"
 
-    # 이메일 주소 마스킹
-    text = re.sub(
-        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+    text, email_count = re.subn(
+        email_pattern,
         "*****@*****.***",
         text,
     )
 
-    # sk-로 시작하는 API Key 마스킹
-    text = re.sub(
-        r"\bsk-[A-Za-z0-9_-]+\b",
+    text, api_key_count = re.subn(
+        api_key_pattern,
         "*****",
         text,
     )
 
-    return text
+    return text, email_count, api_key_count
