@@ -54,6 +54,12 @@ def create_parser() -> argparse.ArgumentParser:
         help="AI 응답의 최대 토큰 수 (1~32768)",
     )
 
+    parser.add_argument(
+        "--safe-mode",
+        action="store_true",
+        help="API Key와 이메일 등 민감정보를 마스킹하여 전송",
+    )
+
     return parser
 
 

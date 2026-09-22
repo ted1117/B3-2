@@ -2,20 +2,7 @@ from app.ai.client import create_ai_client
 from app.ai.prompts import build_prompt
 from app.cli import create_parser
 from app.git_repository import GitRepository
-
-
-def print_commit_result(result: str) -> None:
-    print("[DONE] 커밋 메시지 생성 완료")
-    print()
-    print("--- Commit Message ---")
-    print(result)
-    print("----------------------")
-
-
-def print_pr_result(result: str) -> None:
-    print("[DONE] PR 초안 생성 완료")
-    print()
-    print(result)
+from app.sanitizer import mask_sensitive_data
 
 
 def main() -> None:
@@ -44,7 +31,7 @@ def main() -> None:
 
         case "pr":
             status = repository.get_status()
-            diff = repository.get_pr_diff()
+            diff = repository.get_diff()
 
             if not diff.strip():
                 print(
@@ -56,6 +43,11 @@ def main() -> None:
             diff_lines = len(diff.splitlines())
 
             print(f"[INFO] PR 변경 사항 수집 완료: " f"{diff_lines}줄")
+
+    if args.safe_mode:
+        status = mask_sensitive_data(status)
+        diff = mask_sensitive_data(diff)
+        print("[INFO] Safe Mode 적용: 민감정보를 마스킹했습니다.")
 
     prompt = build_prompt(
         status=status,
@@ -79,10 +71,16 @@ def main() -> None:
 
     match args.command:
         case "commit":
-            print_commit_result(result)
+            print("[DONE] 커밋 메시지 생성 완료")
+            print()
+            print("--- Commit Message ---")
+            print(result)
+            print("----------------------")
 
         case "pr":
-            print_pr_result(result)
+            print("[DONE] PR 초안 생성 완료")
+            print()
+            print(result)
 
 
 if __name__ == "__main__":
