@@ -67,6 +67,7 @@ class CodysseyAIClient:
         payload = {
             "model": self._config.model,
             "messages": [{"role": "user", "content": prompt}],
+            "max_completion_tokens": self._config.max_tokens,
         }
 
         response = httpx.post(
