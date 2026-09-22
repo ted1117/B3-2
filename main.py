@@ -31,7 +31,7 @@ def main() -> None:
 
         case "pr":
             status = repository.get_status()
-            diff = repository.get_diff()
+            diff = repository.get_pr_diff()
 
             if not diff.strip():
                 print(
