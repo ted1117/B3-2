@@ -1,3 +1,5 @@
+from app.ai.validator import validate_commit_message, validate_pr_draft
+
 from app.ai.client import create_ai_client
 from app.ai.prompts import build_prompt
 from app.cli import create_parser
@@ -26,8 +28,8 @@ def main() -> None:
             changed_files = len(status.splitlines())
             diff_lines = len(diff.splitlines())
 
-            print(f"[INFO] Git status 수집 완료: " f"{changed_files}개 파일 변경 감지")
-            print(f"[INFO] Git diff 수집 완료: " f"{diff_lines}줄")
+            print(f"[INFO] Git status 수집 완료: {changed_files}개 파일 변경 감지")
+            print(f"[INFO] Git diff 수집 완료: {diff_lines}줄")
 
         case "pr":
             status = repository.get_status()
@@ -42,7 +44,7 @@ def main() -> None:
 
             diff_lines = len(diff.splitlines())
 
-            print(f"[INFO] PR 변경 사항 수집 완료: " f"{diff_lines}줄")
+            print(f"[INFO] PR 변경 사항 수집 완료: {diff_lines}줄")
 
     if args.safe_mode:
         status, status_emails, status_keys = mask_sensitive_data(status)
@@ -80,6 +82,14 @@ def main() -> None:
 
     match args.command:
         case "commit":
+            errors = validate_commit_message(result)
+
+            if errors:
+                print("[ERROR] 생성된 커밋 메시지가 형식 규칙을 만족하지 않습니다.")
+                for error in errors:
+                    print(f"- {error}")
+                return
+
             print("[DONE] 커밋 메시지 생성 완료")
             print()
             print("--- Commit Message ---")
@@ -87,6 +97,14 @@ def main() -> None:
             print("----------------------")
 
         case "pr":
+            errors = validate_pr_draft(result)
+
+            if errors:
+                print("[ERROR] 생성된 PR 초안이 형식 규칙을 만족하지 않습니다.")
+                for error in errors:
+                    print(f"- {error}")
+                return
+
             print("[DONE] PR 초안 생성 완료")
             print()
             print(result)
